@@ -1,0 +1,58 @@
+version: "3.8"
+
+services:
+  db:
+    image: postgres:15
+    container_name: mindorbit_db
+    environment:
+      POSTGRES_USER: mindorbit_user
+      POSTGRES_PASSWORD: mindorbit_pass
+      POSTGRES_DB: mindorbit_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  db_test:
+    image: postgres:15
+    container_name: mindorbit_db_test
+    environment:
+      POSTGRES_USER: test_user
+      POSTGRES_PASSWORD: test_pass
+      POSTGRES_DB: test_db
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_test_data:/var/lib/postgresql/data
+
+  api:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    container_name: mindorbit_api
+    volumes:
+      - ./backend:/app
+    depends_on:
+      - db
+    ports:
+      - "8000:8000"
+    environment:
+      - PYTHONPATH=/app
+
+  pytest:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    container_name: mindorbit_pytest
+    command: ["pytest", "app/tests/"]
+    volumes:
+      - ./backend:/app
+    depends_on:
+      - db_test
+    environment:
+      - PYTHONPATH=/app
+      - DATABASE_URL=postgresql+asyncpg://test_user:test_pass@db_test:5432/test_db
+
+volumes:
+  postgres_data:
+  postgres_test_data:
