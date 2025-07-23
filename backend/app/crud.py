@@ -72,7 +72,6 @@ async def get_notes(db: AsyncSession, user_id: int, skip: int = 0, limit: int = 
     return result.scalars().all()
 
 async def get_note(db: AsyncSession, note_id: int, user_id: int):
-/*************  ✨ Windsurf Command ⭐  *************/
     """
     Retrieve a specific note by its ID for a given user.
 
@@ -85,7 +84,6 @@ async def get_note(db: AsyncSession, note_id: int, user_id: int):
         Note: The note instance if found, else None.
     """
 
-/*******  90aaccd8-1888-47ad-a028-8904c45231db  *******/
     result = await db.execute(
         select(models.Note).filter(models.Note.id == note_id, models.Note.owner_id == user_id)
     )
