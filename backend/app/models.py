@@ -4,6 +4,7 @@ from datetime import datetime
 
 Base = declarative_base()
 
+
 class User(Base):
     __tablename__ = "users"
 
@@ -17,6 +18,7 @@ class User(Base):
     tasks = relationship("Task", back_populates="owner")
     notes = relationship("Note", back_populates="owner")
 
+
 class Task(Base):
     __tablename__ = "tasks"
 
@@ -29,13 +31,16 @@ class Task(Base):
 
     owner = relationship("User", back_populates="tasks")
 
+
 class Note(Base):
     __tablename__ = "notes"
 
     id = Column(Integer, primary_key=True, index=True)
     title = Column(String(255))
     content = Column(Text)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(
+        DateTime, default=datetime.utcnow, server_default=datetime.utcnow()
+    )
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     owner_id = Column(Integer, ForeignKey("users.id"))
 
